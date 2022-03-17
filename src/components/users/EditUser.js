@@ -1,27 +1,34 @@
 import  axios  from "axios";
-import React, { useState } from "react";
-import {useNavigate}  from 'react-router-dom'
+import React, { useState,useEffect } from "react";
+import {useNavigate,useParams}  from 'react-router-dom';
 
-const AddUser = () => {
+const EditUser = () => {
   let navigate=useNavigate();
+  const {id}=useParams();
     const [user,setUser]=useState({
         name:"",
         username:"",
         email:"" 
     });
-
-      var styles={
-        textAlign:'center'
-      };
-
     const {name,username,email}=user;
     const onInputChange=e=>{
         setUser({...user,[e.target.name]:e.target.value})
     }
+
+    useEffect(()=>{
+        loadUser()
+    },[]);
+
+    const loadUser = async()=>
+    {
+        const result= await axios.get(`http://localhost:3001/users/${id}`);
+        setUser(result.data);
+    }
+
     const submitForm= async (e)=>
     {
       e.preventDefault()
-      await axios.post("http://localhost:3001/users",user);
+      await axios.put(`http://localhost:3001/users/${id}`,user);
     //  await axios({
     //     method: 'post',
     //     url: 'http://localhost:3001/users',
@@ -32,7 +39,9 @@ const AddUser = () => {
   return (
     <div>
       <div className="container">
-      <h1 style={styles}>Add the User</h1>
+      <h1 style={{
+        textAlign:'center'
+      }}>Edit the User</h1>
         <form onSubmit={e=>submitForm(e)}>
           <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">
@@ -77,8 +86,8 @@ const AddUser = () => {
               We'll never share your email with anyone else.
             </div>
           </div>
-          <button type="submit" class="btn btn-primary">
-            Add User 
+          <button type="submit" class="btn btn-warning">
+            Edit User 
           </button>
         </form>
       </div>
@@ -86,4 +95,4 @@ const AddUser = () => {
   );
 };
 
-export default AddUser;
+export default EditUser;
